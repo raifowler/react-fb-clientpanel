@@ -15,7 +15,24 @@ class ClientDetails extends Component {
 
   balanceSubmit = e => {
     e.preventDefault();
-    console.log(this.state.balanceUpdateAmount);
+    const { client, firestore } = this.props;
+    const { balanceUpdateAmount } = this.state;
+
+    const clientUpdate = {
+      balance: parseFloat(balanceUpdateAmount)
+    };
+
+    // Update in firestore
+    firestore.update({ collection: "clients", doc: client.id }, clientUpdate);
+  };
+
+  // Delete Client
+  onDeleteClick = () => {
+    const { client, firestore, history } = this.props;
+
+    firestore
+      .delete({ collection: "clients", doc: client.id })
+      .then(history.push("/"));
   };
 
   onChange = e => {
@@ -65,10 +82,12 @@ class ClientDetails extends Component {
             </div>
             <div className="col-md-6">
               <div className="btn-group float-right">
-                <Link to={`/client.edit/${client.id}`} className="btn btn-dark">
+                <Link to={`/client/edit/${client.id}`} className="btn btn-dark">
                   Edit
                 </Link>
-                <button className="btn btn-danger">Delete</button>
+                <button onClick={this.onDeleteClick} className="btn btn-danger">
+                  Delete
+                </button>
               </div>
             </div>
           </div>
@@ -105,7 +124,7 @@ class ClientDetails extends Component {
                           })
                         }
                       >
-                        <i className="fas fa-pencil-alt" />
+                        <i className="fas fa-pencil-alt mx-1" />
                       </a>
                     </small>
                   </h3>
